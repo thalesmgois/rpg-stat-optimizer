@@ -1,13 +1,13 @@
 const STORAGE_KEY = 'rpg-stat-optimizer-v1';
 const STAT_DEFS = [
-  {id:'damage',name:'Dano',kind:'number',base:5,equipment:0,growth:1},
+  {id:'damage',name:'Dano',kind:'percent',base:5,equipment:0,growth:1},
   {id:'attackSpeed',name:'Vel. de ataque',kind:'number',base:1,equipment:0,growth:.01},
-  {id:'critChance',name:'Chance crítica',kind:'percent',base:5,equipment:0,growth:.1},
-  {id:'critDamage',name:'Dano crítico',kind:'percent',base:200,equipment:0,growth:.1},
-  {id:'hp',name:'HP máximo',kind:'number',base:200,equipment:0,growth:10},
+  {id:'critChance',name:'Chance crítica',kind:'percent',base:5,equipment:0,growth:1},
+  {id:'critDamage',name:'Dano crítico',kind:'percent',base:200,equipment:0,growth:1},
+  {id:'hp',name:'HP máximo',kind:'percent',base:200,equipment:0,growth:1},
   {id:'defense',name:'Defesa',kind:'number',base:50,equipment:0,growth:1},
-  {id:'dodge',name:'Esquiva',kind:'percent',base:5,equipment:0,growth:.1},
-  {id:'block',name:'Bloqueio',kind:'percent',base:20,equipment:0,growth:.1},
+  {id:'dodge',name:'Esquiva',kind:'percent',base:5,equipment:0,growth:1},
+  {id:'block',name:'Bloqueio',kind:'percent',base:20,equipment:0,growth:1},
   {id:'movement',name:'Vel. de movimento',kind:'number',base:70,equipment:0,growth:1}
 ];
 const defaultHero = {name:'Cavaleiro',level:25,points:120,enemyDamage:100,objective:'dps',stats:Object.fromEntries(STAT_DEFS.map(s=>[s.id,{base:s.base,equipment:s.equipment,growth:s.growth,allocated:0}]))};
@@ -17,10 +17,10 @@ function save(){localStorage.setItem(STORAGE_KEY,JSON.stringify(state))}
 const $=id=>document.getElementById(id);
 function fmt(n, kind='number'){if(!Number.isFinite(n))return '—';return kind==='percent'?n.toFixed(2)+'%':n.toFixed(2).replace(/\.00$/,'')}
 function hero(){return state.heroes[current]}
-function total(id, h=hero()){const s=h.stats[id];return Number(s.base)+Number(s.equipment)+Number(s.growth)*Number(s.allocated)}
+function total(id, h=hero()){const s=h.stats[id];const stat=STAT_DEFS.find(d=>d.id===id);if(stat.kind==='percent'){const base=Number(s.base)+Number(s.equipment);return base*(1+Number(s.allocated)*Number(s.growth)/100)}else{return Number(s.base)+Number(s.equipment)+Number(s.growth)*Number(s.allocated)}}
 function renderTabs(){ $('heroTabs').innerHTML=state.heroes.map((h,i)=>`<button class="tab ${i===current?'active':''}" data-hero="${i}">${esc(h.name||'Herói '+(i+1))}</button>`).join('');document.querySelectorAll('[data-hero]').forEach(b=>b.onclick=()=>{current=+b.dataset.hero;render()})}
 function render(){const h=hero();renderTabs();$('heroName').value=h.name;$('heroLevel').value=h.level;$('points').value=h.points;$('enemyDamage').value=h.enemyDamage;$('objective').value=h.objective;let used=Object.values(h.stats).reduce((a,s)=>a+Number(s.allocated),0);$('pointsUsed').textContent=`${used} / ${h.points} pontos`;$('pointsUsed').style.color=used>h.points?'#ff9ca7':'';
-$('statsBody').innerHTML=STAT_DEFS.map(d=>{let s=h.stats[d.id];return `<tr><td><span class="stat-label"><i class="dot"></i>${d.name}</span></td><td><input data-id="${d.id}" data-field="base" type="number" step="any" value="${s.base}"></td><td><input data-id="${d.id}" data-field="equipment" type="number" step="any" value="${s.equipment}"></td><td><input data-id="${d.id}" data-field="growth" type="number" step="any" value="${s.growth}"></td><td><input data-id="${d.id}" data-field="allocated" type="number" min="0" step="1" value="${s.allocated}"></td><td class="total">${fmt(total(d.id),d.kind)}</td></tr>`}).join('');
+$('statsBody').innerHTML=STAT_DEFS.map(d=>{let s=h.stats[d.id];return `<tr><td><span class="stat-label"><i class="dot"></i>${d.name}</span></td><td><input data-id="${d.id}" data-field="base" type="number" step="any" value="${s.base}"></td><td><input data-id="${d.id}" data-field="equipment" type="number" step="any" value="${s.equipment}"></td><td><input data-id="${d.id}" data-field="growth" type="number" step="any" value="${s.growth}" title="${d.kind==='percent'?'Percentual por ponto':'Valor por ponto'}"></td><td><input data-id="${d.id}" data-field="allocated" type="number" min="0" step="1" value="${s.allocated}"></td><td class="total">${fmt(total(d.id),d.kind)}</td></tr>`}).join('');
 document.querySelectorAll('#statsBody input').forEach(x=>x.onchange=()=>{h.stats[x.dataset.id][x.dataset.field]=Math.max(0,Number(x.value)||0);save();render()});$('results').innerHTML=metrics(h);bindTop();}
 function bindTop(){[['heroName','name'],['heroLevel','level'],['points','points'],['enemyDamage','enemyDamage'],['objective','objective']].forEach(([id,key])=>$(id).onchange=()=>{hero()[key]=$(id).type==='number'?Number($(id).value):$(id).value;save();render()})}
 function metrics(h){const d=total('damage',h), speed=total('attackSpeed',h), crit=Math.min(100,total('critChance',h))/100, critD=total('critDamage',h)/100;const dps=d*speed*((1-crit)+crit*critD);const hp=total('hp',h),def=total('defense',h), dodge=Math.min(75,total('dodge',h))/100,block=Math.min(75,total('block',h))/100;const reduction=Math.min(.75,Math.max(0,def)/(Math.max(0,def)+100));const received=(1-dodge)*(1-block*.5)*(1-reduction);const ehp=hp/Math.max(.0001,received);return `<div class="metric accent wide"><small>DPS esperado</small><strong>${fmt(dps)}</strong></div><div class="metric"><small>Defesa física</small><strong>${fmt(def)}</strong></div><div class="metric"><small>Redução física</small><strong>${fmt(reduction*100,'percent')}</strong></div><div class="metric"><small>HP máximo</small><strong>${fmt(hp)}</strong></div><div class="metric"><small>EHP aproximado</small><strong>${fmt(ehp)}</strong></div><div class="metric wide"><small>Dano médio por golpe</small><strong>${fmt(d*((1-crit)+crit*critD))}</strong></div>`}
