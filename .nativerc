@@ -1,0 +1,7 @@
+{
+  "native": {
+    "android": {
+      "path": "android"
+    }
+  }
+}

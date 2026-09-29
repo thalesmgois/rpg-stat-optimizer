@@ -1,0 +1,11 @@
+{
+  "appId": "com.rpgoptimizer.app",
+  "appName": "RPG Stat Optimizer",
+  "webDir": ".",
+  "bundledWebRuntime": false,
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  }
+}
