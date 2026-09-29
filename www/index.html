@@ -15,42 +15,66 @@
       <div>
         <p class="eyebrow">WALLPAPER GAME</p>
         <h1>RPG Stats Optimizer</h1>
-        <p class="subtitle">Configure cada herói e encontre a melhor combinação para DPS ou sobrevivência.</p>
+        <p class="subtitle">Configure heróis, otimize atributos e calcule farm de ouro.</p>
       </div>
       <button id="resetAll" class="button danger-outline" type="button">Restaurar dados</button>
     </header>
 
-    <nav id="heroTabs" class="hero-tabs" aria-label="Heróis"></nav>
+    <div class="tabs-container">
+      <button class="tab-nav active" data-tab="heroes">⚔️ Heróis</button>
+      <button class="tab-nav" data-tab="farm">💰 Farm de Gold</button>
+    </div>
 
-    <section class="toolbar card">
-      <div class="field compact"><label for="heroName">Nome do herói</label><input id="heroName" type="text"></div>
-      <div class="field compact"><label for="heroLevel">Nível</label><input id="heroLevel" type="number" min="1" step="1"></div>
-      <div class="field compact"><label for="points">Pontos disponíveis</label><input id="points" type="number" min="0" step="1"></div>
-      <button id="addHero" class="button secondary" type="button">+ Novo herói</button>
-      <button id="optimize" class="button primary" type="button">Otimizar distribuição</button>
-      <button id="exportBtn" class="button secondary" type="button">📥 Exportar</button>
-      <button id="importBtn" class="button secondary" type="button">📤 Importar</button>
-    </section>
+    <!-- TAB: HERÓIS -->
+    <div id="heroes" class="tab-content active">
+      <nav id="heroTabs" class="hero-tabs" aria-label="Heróis"></nav>
 
-    <section class="grid two-columns">
-      <article class="card">
-        <div class="section-heading"><div><p class="eyebrow">CONFIGURAÇÃO</p><h2>Status e crescimento</h2></div><span id="pointsUsed" class="pill"></span></div>
-        <p class="hint">Total = base + equipamento + (pontos distribuídos × crescimento). Use percentuais como 5 para 5%.</p>
-        <div class="table-wrap"><table><thead><tr><th>Status</th><th>Base</th><th>Equip.</th><th>Crescimento / ponto</th><th>Distribuídos</th><th>Total</th></tr></thead><tbody id="statsBody"></tbody></table></div>
-      </article>
+      <section class="toolbar card">
+        <div class="field compact"><label for="heroName">Nome do herói</label><input id="heroName" type="text"></div>
+        <div class="field compact"><label for="heroLevel">Nível</label><input id="heroLevel" type="number" min="1" step="1"></div>
+        <div class="field compact"><label for="points">Pontos disponíveis</label><input id="points" type="number" min="0" step="1"></div>
+        <button id="addHero" class="button secondary" type="button">+ Novo herói</button>
+        <button id="optimize" class="button primary" type="button">Otimizar distribuição</button>
+        <button id="exportBtn" class="button secondary" type="button">📥 Exportar</button>
+        <button id="importBtn" class="button secondary" type="button">📤 Importar</button>
+      </section>
 
-      <aside class="card results-card">
-        <div class="section-heading"><div><p class="eyebrow">RESULTADOS</p><h2>Indicadores calculados</h2></div></div>
-        <div id="results" class="results"></div>
-        <div class="field"><label for="enemyDamage">Dano físico recebido por golpe (para EHP)</label><input id="enemyDamage" type="number" min="1" step="1"></div>
-        <div class="field"><label for="objective">Objetivo da otimização</label><select id="objective"><option value="dps">Maior DPS</option><option value="ehp">Maior defesa efetiva / EHP</option><option value="balanced">Equilíbrio DPS + EHP</option><option value="tankDps">DPS com prioridade defensiva</option></select></div>
-        <p class="formula-note">O DPS considera dano, velocidade de ataque, chance e dano crítico. O EHP considera HP, defesa, esquiva e bloqueio contra dano físico.</p>
-      </aside>
-    </section>
+      <section class="grid two-columns">
+        <article class="card">
+          <div class="section-heading"><div><p class="eyebrow">CONFIGURAÇÃO</p><h2>Status e crescimento</h2></div><span id="pointsUsed" class="pill"></span></div>
+          <p class="hint">Total = base + equipamento + (pontos distribuídos × crescimento). Use percentuais como 5 para 5%.</p>
+          <div class="table-wrap"><table><thead><tr><th>Status</th><th>Base</th><th>Equip.</th><th>Crescimento / ponto</th><th>Distribuídos</th><th>Total</th></tr></thead><tbody id="statsBody"></tbody></table></div>
+        </article>
+
+        <aside class="card results-card">
+          <div class="section-heading"><div><p class="eyebrow">RESULTADOS</p><h2>Indicadores calculados</h2></div></div>
+          <div id="results" class="results"></div>
+          <div class="field"><label for="enemyDamage">Dano físico recebido por golpe (para EHP)</label><input id="enemyDamage" type="number" min="1" step="1"></div>
+          <div class="field"><label for="objective">Objetivo da otimização</label><select id="objective"><option value="dps">Maior DPS</option><option value="ehp">Maior defesa efetiva / EHP</option><option value="balanced">Equilíbrio DPS + EHP</option><option value="tankDps">DPS com prioridade defensiva</option></select></div>
+          <p class="formula-note">O DPS considera dano, velocidade de ataque, chance e dano crítico. O EHP considera HP, defesa, esquiva e bloqueio contra dano físico.</p>
+        </aside>
+      </section>
+    </div>
+
+    <!-- TAB: FARM DE GOLD -->
+    <div id="farm" class="tab-content">
+      <section class="card farm-card">
+        <div class="section-heading"><div><p class="eyebrow">💰 CALCULADORA</p><h2>Farm de Gold</h2></div></div>
+        <p class="hint">Informe o gold por stage e o tempo em minutos para calcular o rendimento.</p>
+
+        <div class="farm-inputs">
+          <div class="field"><label for="goldPerStage">Gold por Stage</label><input id="goldPerStage" type="number" min="0" step="1"></div>
+          <div class="field"><label for="timePerStage">Tempo por Stage (minutos)</label><input id="timePerStage" type="number" min="0.1" step="0.1"></div>
+          <button id="calcFarm" class="button primary" type="button">Calcular</button>
+          <button id="resetFarm" class="button secondary" type="button">Limpar</button>
+        </div>
+
+        <div id="farmResults" class="farm-results"></div>
+      </section>
+    </div>
 
     <footer>Os dados ficam salvos apenas neste navegador. Verifique as fórmulas do seu jogo antes de usar o resultado em uma build final.</footer>
   </main>
-  <script src="cordova.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
