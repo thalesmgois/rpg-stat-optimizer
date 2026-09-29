@@ -1,7 +1,7 @@
 const STORAGE_KEY = 'rpg-stat-optimizer-v1';
 const STAT_DEFS = [
   {id:'damage',name:'Dano',kind:'percent',base:5,equipment:0,growth:1},
-  {id:'attackSpeed',name:'Vel. de ataque',kind:'number',base:1,equipment:0,growth:.01},
+  {id:'attackSpeed',name:'Vel. de ataque',kind:'number',base:1,equipment:0,growth:0.0026},
   {id:'critChance',name:'Chance crítica',kind:'percent',base:5,equipment:0,growth:1},
   {id:'critDamage',name:'Dano crítico',kind:'percent',base:200,equipment:0,growth:1},
   {id:'hp',name:'HP máximo',kind:'percent',base:200,equipment:0,growth:1},
@@ -18,7 +18,27 @@ const $=id=>document.getElementById(id);
 function fmt(n, kind='number'){if(!Number.isFinite(n))return '—';return kind==='percent'?n.toFixed(2)+'%':n.toFixed(2).replace(/\.00$/,'')}
 function hero(){return state.heroes[current]}
 function total(id, h=hero()){const s=h.stats[id];const stat=STAT_DEFS.find(d=>d.id===id);if(stat.kind==='percent'){const base=Number(s.base)+Number(s.equipment);return base*(1+Number(s.allocated)*Number(s.growth)/100)}else{return Number(s.base)+Number(s.equipment)+Number(s.growth)*Number(s.allocated)}}
-function renderTabs(){ $('heroTabs').innerHTML=state.heroes.map((h,i)=>`<button class="tab ${i===current?'active':''}" data-hero="${i}">${esc(h.name||'Herói '+(i+1))}</button>`).join('');document.querySelectorAll('[data-hero]').forEach(b=>b.onclick=()=>{current=+b.dataset.hero;render()})}
+function renderTabs(){
+  $('heroTabs').innerHTML = state.heroes.map((h,i)=>`
+    <div class="tab-wrap ${i===current?'active':''}">
+      <button class="tab" data-hero="${i}">${esc(h.name||'Herói '+(i+1))}</button>
+      <button class="tab-delete" data-remove-hero="${i}" title="Excluir herói">✕</button>
+    </div>
+  `).join('');
+  document.querySelectorAll('[data-hero]').forEach(b=>b.onclick=()=>{current=+b.dataset.hero;render()});
+  document.querySelectorAll('[data-remove-hero]').forEach(b=>b.onclick=()=>{removeHero(+b.dataset.removeHero)});
+}
+function removeHero(index){
+  if(state.heroes.length <= 1){
+    alert('Você precisa manter pelo menos 1 herói.');
+    return;
+  }
+  if(!confirm(`Deseja apagar o herói "${state.heroes[index].name || 'Herói '+(index+1)}"?`)) return;
+  state.heroes.splice(index, 1);
+  current = Math.max(0, Math.min(current, state.heroes.length - 1));
+  save();
+  render();
+}
 function render(){const h=hero();renderTabs();$('heroName').value=h.name;$('heroLevel').value=h.level;$('points').value=h.points;$('enemyDamage').value=h.enemyDamage;$('objective').value=h.objective;let used=Object.values(h.stats).reduce((a,s)=>a+Number(s.allocated),0);$('pointsUsed').textContent=`${used} / ${h.points} pontos`;$('pointsUsed').style.color=used>h.points?'#ff9ca7':'';
 $('statsBody').innerHTML=STAT_DEFS.map(d=>{let s=h.stats[d.id];return `<tr><td><span class="stat-label"><i class="dot"></i>${d.name}</span></td><td><input data-id="${d.id}" data-field="base" type="number" step="any" value="${s.base}"></td><td><input data-id="${d.id}" data-field="equipment" type="number" step="any" value="${s.equipment}"></td><td><input data-id="${d.id}" data-field="growth" type="number" step="any" value="${s.growth}" title="${d.kind==='percent'?'Percentual por ponto':'Valor por ponto'}"></td><td><input data-id="${d.id}" data-field="allocated" type="number" min="0" step="1" value="${s.allocated}"></td><td class="total">${fmt(total(d.id),d.kind)}</td></tr>`}).join('');
 document.querySelectorAll('#statsBody input').forEach(x=>x.onchange=()=>{h.stats[x.dataset.id][x.dataset.field]=Math.max(0,Number(x.value)||0);save();render()});$('results').innerHTML=metrics(h);bindTop();}
