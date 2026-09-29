@@ -1,0 +1,62 @@
+RPG STAT OPTIMIZER - INSTRUÇÕES PARA GERAR APK
+
+=== PASSO 1: UPLOAD ===
+
+Escolha uma das opções abaixo:
+
+OPÇÃO A - PhoneGap Build (RECOMENDADO)
+1. Acesse: https://build.phonegap.com/
+2. Clique em "UPLOAD" ou faça drag-and-drop deste arquivo ZIP
+3. Aguarde o build completar
+4. Baixe o APK gerado
+
+OPÇÃO B - Web2APK
+1. Acesse: https://www.web2apk.com/
+2. Selecione "Projeto Cordova"
+3. Faça upload do ZIP
+4. Configure o ícone (opcional)
+5. Clique em "Build APK"
+6. Baixe o APK
+
+OPÇÃO C - Apache Cordova (para avançados)
+1. Instale Node.js e Cordova
+2. Extraia este ZIP
+3. Execute: cordova build android
+4. APK estará em: platforms/android/app/build/outputs/apk/debug/
+
+=== PASSO 2: INSTALAR NO CELULAR ===
+
+1. Baixe o arquivo APK gerado
+2. Envie para o celular via WhatsApp, email, ou Bluetooth
+3. No celular, abra o gerenciador de arquivos
+4. Localize o arquivo .apk
+5. Toque para instalar
+6. Permita "Instalar de fontes desconhecidas" se necessário
+7. Pronto! O app está instalado
+
+=== INFORMAÇÕES ===
+
+Nome do App: RPG Stat Optimizer
+ID: com.rpgoptimizer.app
+Versão: 1.0.0
+Arquitetura: Android 5.0+
+
+=== FUNCIONALIDADES ===
+
+✓ Criar múltiplos heróis com abas independentes
+✓ Configurar atributos base, equipamento e crescimento
+✓ Calcular DPS, Defesa e EHP em tempo real
+✓ Otimizar distribuição automática
+✓ Deletar heróis criados por acidente
+✓ Salvamento automático no dispositivo
+✓ Interface responsiva para mobile
+
+=== SUPORTE ===
+
+Se tiver dúvidas:
+- Verifique se o APK é da versão correta
+- Teste em outro dispositivo
+- Limpe o cache do app
+- Desinstale e reinstale
+
+Bom jogo! 🎮

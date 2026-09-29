@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#172033">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>RPG Stat Optimizer</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="hero-header">
+      <div>
+        <p class="eyebrow">RPG STAT OPTIMIZER</p>
+        <h1>Distribuição de atributos</h1>
+        <p class="subtitle">Configure cada herói e encontre a melhor combinação para DPS ou sobrevivência.</p>
+      </div>
+      <button id="resetAll" class="button danger-outline" type="button">Restaurar dados</button>
+    </header>
+
+    <nav id="heroTabs" class="hero-tabs" aria-label="Heróis"></nav>
+
+    <section class="toolbar card">
+      <div class="field compact"><label for="heroName">Nome do herói</label><input id="heroName" type="text"></div>
+      <div class="field compact"><label for="heroLevel">Nível</label><input id="heroLevel" type="number" min="1" step="1"></div>
+      <div class="field compact"><label for="points">Pontos disponíveis</label><input id="points" type="number" min="0" step="1"></div>
+      <button id="addHero" class="button secondary" type="button">+ Novo herói</button>
+      <button id="optimize" class="button primary" type="button">Otimizar distribuição</button>
+    </section>
+
+    <section class="grid two-columns">
+      <article class="card">
+        <div class="section-heading"><div><p class="eyebrow">CONFIGURAÇÃO</p><h2>Status e crescimento</h2></div><span id="pointsUsed" class="pill"></span></div>
+        <p class="hint">Total = base + equipamento + (pontos distribuídos × crescimento). Use percentuais como 5 para 5%.</p>
+        <div class="table-wrap"><table><thead><tr><th>Status</th><th>Base</th><th>Equip.</th><th>Crescimento / ponto</th><th>Distribuídos</th><th>Total</th></tr></thead><tbody id="statsBody"></tbody></table></div>
+      </article>
+
+      <aside class="card results-card">
+        <div class="section-heading"><div><p class="eyebrow">RESULTADOS</p><h2>Indicadores calculados</h2></div></div>
+        <div id="results" class="results"></div>
+        <div class="field"><label for="enemyDamage">Dano físico recebido por golpe (para EHP)</label><input id="enemyDamage" type="number" min="1" step="1"></div>
+        <div class="field"><label for="objective">Objetivo da otimização</label><select id="objective"><option value="dps">Maior DPS</option><option value="ehp">Maior defesa efetiva / EHP</option><option value="balanced">Equilíbrio DPS + EHP</option><option value="tankDps">DPS com prioridade defensiva</option></select></div>
+        <p class="formula-note">O DPS considera dano, velocidade de ataque, chance e dano crítico. O EHP considera HP, defesa, esquiva e bloqueio contra dano físico.</p>
+      </aside>
+    </section>
+
+    <footer>Os dados ficam salvos apenas neste navegador. Verifique as fórmulas do seu jogo antes de usar o resultado em uma build final.</footer>
+  </main>
+  <script src="cordova.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
